@@ -1,0 +1,10 @@
+server {
+    listen 80;  # You can change the port if necessary
+    server_name localhost;
+
+    location / {
+        proxy_pass https://arcane-premise-405104.uc.r.appspot.com/;  # Replace with your App Engine app's URL
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

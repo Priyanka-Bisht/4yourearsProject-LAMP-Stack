@@ -1,0 +1,93 @@
+---
+- name: Install Nginx and Configure Reverse Proxy
+  hosts: localhost
+  become: yes  # Use sudo to become the root user
+
+  tasks:
+    - name: Create user "ansible"
+      user:
+        name: ansible
+        state: present
+        groups: sudo
+        shell: /bin/bash
+
+    - name: Grant sudo privileges to user "ansible"
+      copy:
+        content: "ansible ALL=(ALL) NOPASSWD:ALL"
+        dest: "/etc/sudoers.d/ansible"
+        owner: root
+        group: sudo
+        mode: "0440"
+
+
+    - name: Allow ansible to run setup module without password
+      lineinfile:
+        path: /etc/sudoers
+        line: 'ansible ALL=(ALL) NOPASSWD: /usr/bin/ansible-pull -U $HOME -C $HOME/.ansible/pull --purge'
+
+
+    - name: Update APT package cache (for Ubuntu)
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy modified nginx.conf
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+      notify: Reload Nginx
+
+    - name: Copy modified default.conf
+      copy:
+        src: default.conf
+        dest: /etc/nginx/conf.d/default.conf
+      notify: Reload Nginx
+
+    - name: Copy modified web.conf
+      copy:
+        src: web.conf
+        dest: /etc/nginx/conf.d/web.conf
+      notify: Reload Nginx
+
+    - name: Ensure Nginx is started and enabled
+      command: systemctl start nginx
+      ignore_errors: yes
+      register: result
+      changed_when: "'Active: active' in result.stderr"
+      become: yes
+
+    - name: Enable Nginx to start at boot
+      command: systemctl enable nginx
+
+    - name: Create an Nginx configuration file for reverse proxy
+      template:
+        src: nginx_reverse_proxy.conf.j2
+        dest: /etc/nginx/sites-available/reverse_proxy
+      notify: Reload Nginx
+
+    - name: Enable the Nginx reverse proxy site
+      file:
+        src: /etc/nginx/sites-available/reverse_proxy
+        dest: /etc/nginx/sites-enabled/reverse_proxy
+        state: link
+      notify: Reload Nginx
+
+    - name: Remove the default Nginx default site (Debian specific)
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: Reload Nginx
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: Reload sudoers
+      command: sudo /usr/sbin/visudo -c
+      ignore_errors: yes

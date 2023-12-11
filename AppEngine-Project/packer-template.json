@@ -1,0 +1,66 @@
+{
+  "builders": [
+    {
+      "type": "googlecompute",
+      "project_id": "arcane-premise-405104",
+      "source_image_family": "ubuntu-2004-lts",
+      "image_name": "packer-{{timestamp}}",
+      "image_family": "pipelineimage",
+      "zone": "us-central1-b",
+      "ssh_username": "ubuntu",
+      "service_account_email": "terraform-deployment@arcane-premise-405104.iam.gserviceaccount.com"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "playbook.yml",
+      "destination": "/tmp/playbook.yml"
+    },
+
+    {
+      "type": "file",
+      "source": "nginx_reverse_proxy.conf.j2",
+      "destination": "/tmp/nginx_reverse_proxy.conf.j2"
+    },
+
+    {
+      "type": "file",
+      "source": "nginx.conf",
+      "destination": "/tmp/nginx.conf"
+    },
+
+    {
+      "type": "file",
+      "source": "default.conf",
+      "destination": "/tmp/default.conf"
+    },
+
+    {
+      "type": "file",
+      "source": "web.conf",
+      "destination": "/tmp/web.conf"
+    },
+
+    {
+      "type": "shell",
+      "inline": [
+        "sudo apt-get update",
+        "sudo apt-get install -y ansible",
+        "ansible-playbook /tmp/playbook.yml"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "output.json"
+    },
+    {
+      "type": "shell-local",
+      "inline": [
+        "echo '{{ .ImageName }}' > image_id.txt"
+      ]
+    }
+  ]
+}

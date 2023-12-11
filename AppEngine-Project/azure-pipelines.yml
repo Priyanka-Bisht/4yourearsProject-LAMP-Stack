@@ -1,0 +1,45 @@
+# Starter pipeline
+# Start w# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- '*'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: BuildAndDeploy
+  jobs:
+  - job: PackerAndAnsible
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+        addToPath: true
+
+    - checkout: self
+      
+    - script: |
+        # Install Packer
+        wget https://releases.hashicorp.com/packer/1.7.4/packer_1.7.4_linux_amd64.zip
+        unzip packer_1.7.4_linux_amd64.zip
+        chmod +x packer
+        mv packer /usr/local/bin/packer
+
+        # Install Ansible
+        pip install ansible
+      displayName: 'Install Packer and Ansible'
+
+    - script: |
+        # Authenticate with GCP using the service account key   
+        gcloud auth activate-service-account --key-file=$(System.DefaultWorkingDirectory)/terraformdeployment.json --project=arcane-premise-405104
+
+        # Build the image using Packer
+        packer validate $(System.DefaultWorkingDirectory)/packer-template.json
+        packer build -var 'project_id=arcane-premise-405104' $(System.DefaultWorkingDirectory)/packer-template.json
+      displayName: 'Build Image with Packer'
+
+
