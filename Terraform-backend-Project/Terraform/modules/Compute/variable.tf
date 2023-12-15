@@ -100,3 +100,7 @@ variable "instance_group_target_size" {
   type        = number
   
 }
+
+variable "account_id" {
+  type = string
+}
