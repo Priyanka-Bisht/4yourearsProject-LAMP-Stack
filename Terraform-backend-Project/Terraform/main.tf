@@ -31,12 +31,13 @@ module "IAM" {
   source     = "./modules/IAM"
   account_id = var.account_id
   project_id = var.project_id
-  depends_on = [module.Compute]
+  
 
 }
 
 module "Compute" {
   source                        = "./modules/Compute"
+  account_id                    = var.account_id
   project_id                    = var.project_id
   custom_image_name             = var.custom_image_name
   instance_template_name        = var.instance_template_name
@@ -86,13 +87,13 @@ module "Loadbalancer" {
 
 module "AppEngine" {
   source             = "./modules/AppEngine"
+  account_id         = var.account_id
   project_id         = var.project_id
   location_id        = var.location_id
   service            = var.service
   location           = var.location
   force_destroy      = var.force_destroy
   byte_length        = var.byte_length
-  depends_on         = [module.IAM]
   deployment_version = var.deployment_version
 
 }
