@@ -12,6 +12,10 @@
 #   }
 # }
 
+data "google_service_account" "service_account" {
+  account_id   = var.account_id  # Replace with the name of your image
+}
+
 resource "google_app_engine_standard_app_version" "latest_version" {
 
   version_id = var.deployment_version
@@ -43,6 +47,10 @@ resource "google_app_engine_standard_app_version" "latest_version" {
       max_instances                 = 4
     }
   }
+
+  service_account = data.google_service_account.service_account.email
+
+
   noop_on_destroy = true
   delete_service_on_destroy = true
 }
