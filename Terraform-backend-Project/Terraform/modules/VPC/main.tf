@@ -23,6 +23,8 @@ resource "google_compute_subnetwork" "subnetwork" {
   ip_cidr_range = var.subnetwork_ip_cidr_range
   region        = var.subnetwork_region
   network       = google_compute_network.network.name
+  private_ip_google_access = true  # Enable Private Google Access
+
   secondary_ip_range {
     range_name    = var.subnetwork_range_name
     ip_cidr_range = var.secondary_ip_cidr_range
