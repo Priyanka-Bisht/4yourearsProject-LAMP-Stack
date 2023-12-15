@@ -5,6 +5,10 @@ data "google_compute_image" "custom_image" {
   project = var.project_id
 }
 
+data "google_service_account" "service_account" {
+  account_id   = var.account_id  # Replace with the name of your image
+}
+
 # Create a custom instance template
 resource "google_compute_instance_template" "my_instance_template" {
   name        = var.instance_template_name
@@ -30,6 +34,11 @@ resource "google_compute_instance_template" "my_instance_template" {
   # Other instance configuration options as needed
   machine_type = var.machine_type
 
+  # Specify the service account for the instance template
+  service_account {
+    email  = data.google_service_account.service_account.email
+    scopes = ["https://www.googleapis.com/auth/compute", "https://www.googleapis.com/auth/devstorage.full_control"]  # Add the necessary scopes for your use case
+  }
 }
 
 ############### Auto-scaler for instance_group_manager ########################
