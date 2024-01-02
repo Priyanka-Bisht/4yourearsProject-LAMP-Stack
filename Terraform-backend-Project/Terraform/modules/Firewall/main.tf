@@ -26,15 +26,5 @@ resource "google_compute_firewall" "firewall" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-# resource "google_compute_firewall" "http_firewall" {
-#   name    = "allow-http"
-#   network = var.network_name
 
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["8080"]  # Change this if your application uses a different port
-#   }
-
-#   source_ranges = ["0.0.0.0/0"]  # Allowing traffic from any source (update as needed)
-# }
 
