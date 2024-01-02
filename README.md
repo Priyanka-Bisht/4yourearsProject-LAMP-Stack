@@ -21,3 +21,6 @@
 
 * default.conf and web.conf have to be created inside conf.d folder.
 
+
+## Locally check the load using blazemeter.
+
