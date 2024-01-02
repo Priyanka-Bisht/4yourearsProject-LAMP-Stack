@@ -24,12 +24,7 @@ resource "google_compute_instance_template" "my_instance_template" {
     subnetwork = var.subnetwork_name
   }
   
-  # metadata_startup_script = <<-EOF
-  #   #! /bin/bash
-  #   apt update
-  #   cd /home/ansible
-  #   npm start src --port 3000
-  # EOF
+
 
   # Other instance configuration options as needed
   machine_type = var.machine_type
@@ -80,28 +75,4 @@ resource "google_compute_instance_group_manager" "my_instance_group" {
 
 }
 
-######################################Firewall######################################
 
-# resource "google_compute_firewall" "http_firewall" {
-#   name    = "allow-http"
-#   network = var.network_name
-
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["8080"]  # Change this if your application uses a different port
-#   }
-
-#   source_ranges = ["0.0.0.0/0"]  # Allowing traffic from any source (update as needed)
-# }
-
-# resource "google_compute_firewall" "lb_health_check_firewall" {
-#   name    = "allow-health-check"
-#   network = var.network_name
-
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["80", "443"]  # Adjust based on your load balancer health check configuration
-#   }
-
-#   source_ranges = ["0.0.0.0/0"]  # Allowing traffic from any source (update as needed)
-# }
