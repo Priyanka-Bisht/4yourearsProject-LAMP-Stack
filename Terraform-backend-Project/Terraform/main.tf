@@ -95,5 +95,5 @@ module "AppEngine" {
   force_destroy      = var.force_destroy
   byte_length        = var.byte_length
   deployment_version = var.deployment_version
-
+  depends_on         = [module.IAM]
 }
