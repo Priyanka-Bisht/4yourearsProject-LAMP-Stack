@@ -57,39 +57,3 @@ resource "google_app_engine_standard_app_version" "latest_version" {
 
 
 
-# resource "google_storage_bucket" "app" {
-#   name          = "${var.project_name}-${random_id.app.hex}"
-#   location      = var.location
-#   force_destroy = var.force_destroy
-  
-#   versioning {
-#     enabled = true
-#   }
-# }
-
-# resource "random_id" "app" {
-#   byte_length = var.byte_length
-# }
-
-# data "archive_file" "function_dist" {
-#   type        = "zip"
-#   source_dir  = "../gitops-main"
-#   output_path = "../gitops-main/gitops-main.zip"
-# }
-
-# resource "google_storage_bucket_object" "app" {
-#   name   = "gitops-main.zip"
-#   source = data.archive_file.function_dist.output_path
-#   bucket = google_storage_bucket.app.name
-# }
-
-# data "google_service_account" "my_service_account" {
-#   account_id = "azureconnect@radiant-striker-398604.iam.gserviceaccount.com"
-# }
-
-# resource "google_app_engine_application" "my_app" {
-#   # service = var.service
-#   location_id = var.location
-# }
-
-
